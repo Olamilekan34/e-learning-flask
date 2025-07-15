@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+		.limited-text {
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			width: 200px; /* or whatever width you need */
+		}
+
+	</style>
+
+    <div class="page-header-main">
+        <div class="page-header" id="top">
+            <div class="header-overlay">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                            <h1 class="display-3 text-white animated slideInDown font-weight-bold">Courses</h1>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                    <li class="breadcrumb-item text-white active" aria-current="page">Courses</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="section events mt-0" id="events">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="section-heading">
+                        <h2>Available Courses</h2>
+                    </div>
+                </div>
+                {% for course in courses %}
+                    <div class="col-lg-12 col-md-6">
+                        <div class="item">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="image" style="height: 100%;">
+                                        <img style="height: 200px;" class="h-100 w-100" src="{{ url_for('static', filename='uploads/'+course.image if course.image else 'images/event-01.jpg') }}" alt="">
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <ul>
+                                        <!--<li>
+                                            <span class="category">Web Design</span>
+                                            <h4>UI Best Practices</h4>
+                                        </li>-->
+                                        <li>
+                                            <span>{{ course.title }}</span>
+                                            <h6 class="limited-text">{{ course.description }}</h6>
+                                        </li>
+                                        <li>
+                                            <span>Instructor:</span>
+                                            <h6>{{ course.instructor.first_name }} {{ course.instructor.sur_name }}</h6>
+                                        </li>
+                                        <li>
+                                            <span>Students Enrolled:</span>
+                                            <h6>{{ course.enrollments|length }}</h6>
+                                        </li>
+                                    </ul>
+                                    <a href="{{ url_for('main_bp.course_detail', course_id=course.id) }}"><i class="fa fa-angle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

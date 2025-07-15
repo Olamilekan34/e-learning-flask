@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="page-header-main">
+        <div class="page-header" id="top">
+            <div class="header-overlay">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                            <h1 class="display-3 text-white animated slideInDown font-weight-bold">Login</h1>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                    <li class="breadcrumb-item text-white active" aria-current="page">Login</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-us section" id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6  align-self-center">
+                    <div class="section-heading">
+                        <h6>User Login</h6>
+                        <h2>Welcome Back!</h2>
+                        <p>Log in to access your account, continue learning, and track your progress.</p>
+                        <div class="special-offer">
+                            <span class="offer">
+                                <i class="fa fa-user-plus"></i> <!-- Registration icon -->
+                            </span>
+                            <h6>Dont have an account?</h6>
+                            <h4>REGISTER HERE</h4>
+                            <a href="{{ url_for('main_bp.register') }}"><i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                <div class="contact-us-content">
+                    <form method="POST" id="contact-form" enctype="multipart/form-data" action="{{ url_for('main_bp.login') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {% if form.email.errors %}
+                                    <div class="text-danger" mt-0>
+                                    {% for error in form.email.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <fieldset class="mb-0">
+                                    <input type="text" name="email" id="email" value="{{ form.email.data or '' }}" pattern="[^ @]*@[^ @]*" placeholder="Your E-mail..." required>
+                                </fieldset>
+                                
+                            </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="password" name="password" id="password" placeholder="Your Password..." required="">
+                                </fieldset>
+                                {% if form.password.errors %}
+                                    <div class="text-danger">
+                                    {% for error in form.password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <button type="submit" id="form-submit" class="orange-button">Login</button>
+                                </fieldset>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+{% endblock %}

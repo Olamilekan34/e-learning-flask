@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header-main">
+    <div class="page-header" id="top">
+        <div class="header-overlay">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                        <h1 class="display-3 text-white animated slideInDown font-weight-bold">Enrolled Courses</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-center">
+                                <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                <li class="breadcrumb-item text-white active" aria-current="page">Courses</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card" style="overflow: visible !important;">
+                <div class="card-header">
+                    My Courses
+                </div>
+                <div class="card-body">
+                    <!-- Bordered Table -->
+                    <div class="table-responsive mt-4" style="overflow: visible !important;">
+                        <table id="stateReportTable" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Title</th>
+                                    <th>Unit</th>
+                                    <th>Semester</th>
+                                    <th>Level</th>
+                                    <th>Lecturer</th>
+                                    <th>Discusion Forums</th>
+                                    <th>Learning Material</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if enrollments %}
+                                    {% for enrollment in enrollments %}
+                                    <tr>
+                                        <td>{{ enrollment.course.code }}</td>
+                                        <td>{{ enrollment.course.title }}</td>
+                                        <td>{{ enrollment.course.unit }}</td>
+                                        <td>{{ enrollment.course.semester }}</td>
+                                        <td>{{ enrollment.course.level }}</td>
+                                        <td>{{ enrollment.course.instructor.sur_name }} {{ enrollment.course.instructor.first_name }}</td>
+                                        <td style="position: relative;">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Forums
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    {% if enrollment.course.discussion_rooms %}
+                                                        {% for room in enrollment.course.discussion_rooms %}
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ url_for('main_bp.view_discussion_room', room_id=room.id) }}">
+                                                                    {{ room.title }}
+                                                                </a>
+                                                            </li>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <li><span class="dropdown-item text-muted">No forums</span></li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td style="position: relative;">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Materials ({{ enrollment.course.learning_materials|length }})
+                                                </button>
+                                                <ul class="dropdown-menu" style="z-index: 1050; min-width: 300px;">
+                                                    {% if enrollment.course.learning_materials %}
+                                                        {% for material in enrollment.course.learning_materials %}
+                                                        <li class="d-flex justify-content-between align-items-center px-2">
+                                                            <a class="dropdown-item flex-grow-1" href="{{ url_for('static', filename='learning_materials/' ~ material.file_path) }}" target="_blank">
+                                                                {{ material.title }}
+                                                            </a>
+                                                        </li>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <li><span class="dropdown-item text-muted">No materials</span></li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        
+                                        <td>
+                                            <a href="{{ url_for('main_bp.course_detail', course_id=enrollment.course.id) }}" class="btn btn-info btn-sm">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="10" style="text-align: center">No course available</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- End Bordered Table -->
+                </div>
+                <div class="card-footer">
+                    Courses
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

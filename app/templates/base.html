@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+        <title>E Learning</title>
+
+        <!-- Bootstrap core CSS -->
+        <!-- <link href="{{ url_for('static', filename='img/logo/favicon.ico.png') }}" rel="icon"> -->
+
+        <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+        <!-- Additional CSS Files -->
+        <link href="{{ url_for('static', filename='css/fontawesome.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/templatemo-scholar.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/owl.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
+        <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+        <style>
+            /* Ensure the dropdown menu has a background color and proper styling */
+            .nav .dropdown-menu {
+                background-color:rgb(16, 154, 108); /* Set a white background */
+                border: 1px solid #ddd;   /* Add a light border */
+                color: #333;              /* Set text color */
+                padding: 10px;            /* Add padding for better spacing */
+                z-index: 1000;            /* Ensure it appears above other elements */
+            }
+
+            /* Style the dropdown items */
+            .nav .dropdown-item {
+                color: #333;              /* Set text color */
+                padding: 8px 15px;        /* Add padding for better spacing */
+                text-decoration: none;    /* Remove underline */
+                display: block;           /* Ensure items are block-level */
+            }
+
+            /* Change color on hover */
+            .nav .dropdown-item:hover {
+                background-color: teal; /* Light gray background on hover */
+                color: #007bff;           /* Bootstrap primary color for text */
+            }
+
+            /* Ensure the dropdown menu is visible on hover */
+            .nav .dropdown:hover .dropdown-menu {
+                display: block;
+                margin-top: 0; /* Adjust if needed */
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- ***** Preloader Start ***** -->
+        <div id="js-preloader" class="js-preloader">
+            <div class="preloader-inner">
+            <span class="dot"></span>
+            <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            </div>
+        </div>
+        <!-- ***** Preloader End ***** -->
+
+        <!-- ***** Header Area Start ***** -->
+        <header class="header-area header-sticky">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <nav class="main-nav">
+                            <!-- ***** Logo Start ***** -->
+                            <a href="{{ url_for('main_bp.home') }}" class="logo">
+                                <h1>ELearning</h1>
+                            </a>
+                            <!-- ***** Logo End ***** -->
+                            <!-- ***** Menu Start ***** -->
+                            <ul class="nav">
+                                <li class="scroll-to-section"><a href="{{ url_for('main_bp.home') }}" class="active">Home</a></li>
+                                <li class="scroll-to-section"><a href="{{ url_for('main_bp.educators') }}">Educators</a></li>
+                                <li class="scroll-to-section"><a href="{{ url_for('main_bp.students') }}">Students</a></li>
+                                <li class="scroll-to-section"><a href="{{ url_for('main_bp.courses') }}">Courses</a></li>
+                                <!--<li class="scroll-to-section"><a href="#events">Teams</a></li>-->
+                                {% if current_user.is_authenticated %}
+                                    <li class="scroll-to-section dropdown">
+                                        <a href="#" class="dropdown-toggle" id="accountDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Account
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="accountDropdown">
+                                            {% if current_user.is_authenticated and current_user.role == 'educator' %}
+                                            <a class="dropdown-item" href="{{ url_for('main_bp.instructor_profile') }}">Profile</a>
+                                                <a class="dropdown-item" href="{{ url_for('main_bp.instructor_courses') }}">My Courses</a>
+                                            {% else %}
+                                            <a class="dropdown-item" href="{{ url_for('main_bp.student_profile') }}">Profile</a>
+                                                <a class="dropdown-item" href="{{ url_for('main_bp.my_courses') }}">My Courses</a>
+                                            {% endif %}
+                                            <a class="dropdown-item" href="{{ url_for('main_bp.change_password') }}">Settings</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="{{ url_for('main_bp.logout') }}">Logout</a>
+                                        </div>
+                                    </li>
+                                    <!--<li class="scroll-to-section">
+                                        <a href="{{ url_for('main_bp.logout') }}">Logout</a>
+                                    </li>-->
+                                {% else %}
+                                    <li class="scroll-to-section">
+                                        <a href="{{ url_for('main_bp.login') }}">Login</a>
+                                    </li>
+                                    <li class="scroll-to-section">
+                                        <a href="{{ url_for('main_bp.register') }}">Register</a>
+                                    </li>
+                                {% endif %}
+
+                                <!-- <li class="scroll-to-section"><a href="#contact">Register Now!</a></li> -->
+                            </ul>   
+                            <a class='menu-trigger'>
+                                <span>Menu</span>
+                            </a>
+                            <!-- ***** Menu End ***** -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- ***** Header Area End ***** -->
+
+        {% block content %}{% endblock %}
+
+        <footer>
+            <div class="container">
+                <div class="col-lg-12">
+                    <p>Copyright © 2025 OSUNNEYE, OLAMILEKAN OLUWASEUN. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Scripts -->
+        <!-- Bootstrap core JavaScript -->
+        <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <!--<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>-->
+        <script src="{{ url_for('static', filename='js/isotope.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/counter.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    </body>
+</html>

@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header-main">
+    <div class="page-header" id="top">
+        <div class="header-overlay">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                        <h1 class="display-3 text-white animated slideInDown font-weight-bold">My Courses</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-center">
+                                <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                <li class="breadcrumb-item text-white active" aria-current="page">Courses</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card" style="overflow: visible !important;">
+                <div class="card-header">
+                    My Courses
+                    <span class="float-end">
+                        <a href="{{ url_for('main_bp.create_course') }}" class="btn btn-sm btn-success rounded">Create New Course</a>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <!-- Bordered Table -->
+                    <div class="table-responsive mt-4" style="overflow: visible !important;">
+                        <table id="stateReportTable" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Title</th>
+                                    <th>Unit</th>
+                                    <th>Semester</th>
+                                    <th>Level</th>
+                                    <th>Enrollments</th>
+                                    <th>Discusion Forums</th>
+                                    <th>Course Materials</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if courses %}
+                                    {% for course in courses %}
+                                    <tr>
+                                        <td>{{ course.code }}</td>
+                                        <td>{{ course.title }}</td>
+                                        <td>{{ course.unit }}</td>
+                                        <td>{{ course.semester }}</td>
+                                        <td>{{ course.level }}</td>
+                                        <td>{{ course.enrollments|length }}</td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Forums
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    {% if course.discussion_rooms %}
+                                                        {% for room in course.discussion_rooms %}
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ url_for('main_bp.view_discussion_room', room_id=room.id) }}">
+                                                                    {{ room.title }}
+                                                                </a>
+                                                            </li>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <li><span class="dropdown-item text-muted">No forums</span></li>
+                                                    {% endif %}
+                                                </ul>
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addForumModal{{ course.id }}">
+                                                    +
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td style="position: relative;">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Materials ({{ course.learning_materials|length }})
+                                                </button>
+                                                <ul class="dropdown-menu" style="z-index: 1050; min-width: 300px;">
+                                                    {% if course.learning_materials %}
+                                                        {% for material in course.learning_materials %}
+                                                        <li class="d-flex justify-content-between align-items-center px-2">
+                                                            <a class="dropdown-item flex-grow-1" href="{{ url_for('static', filename='learning_materials/' ~ material.file_path) }}" target="_blank">
+                                                                {{ material.title }}
+                                                            </a>
+                                                            <form method="POST" action="{{ url_for('main_bp.delete_material', material_id=material.id) }}" style="display: inline;">
+                                                                <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Delete" onclick="return confirm('Are you sure you want to delete this material?');">
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <li><span class="dropdown-item text-muted">No materials</span></li>
+                                                    {% endif %}
+                                                </ul>
+
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addMaterialModal{{ course.id }}">
+                                                    +
+                                                </button>
+                                            </div>
+                                        </td>
+
+
+                                        
+                                        <td>
+                                            <a href="{{ url_for('main_bp.view_course', course_id=course.id) }}" class="btn btn-info btn-sm">View</a>
+                                            <!--<a href="{{ url_for('main_bp.create_quiz', course_id=course.id) }}" class="btn btn-success btn-sm">Add Quiz</a>-->
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="10" style="text-align: center">No course available</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- End Bordered Table -->
+                </div>
+                <div class="card-footer">
+                    Courses
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% for course in courses %}
+    <div class="modal fade" id="addForumModal{{ course.id }}" tabindex="-1" aria-labelledby="addForumModalLabel{{ course.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ url_for('main_bp.add_discussion_room', course_id=course.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addForumModalLabel{{ course.id }}">Add Forum to {{ course.title }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Forum Title</label>
+                            <input type="text" class="form-control" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Forum Description</label>
+                            <textarea class="form-control" name="description" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Create</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endfor %}
+
+{% for course in courses %}
+    <div class="modal fade" id="addMaterialModal{{ course.id }}" tabindex="-1" aria-labelledby="addMaterialModalLabel{{ course.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('main_bp.add_learning_material', course_id=course.id) }}">
+            {{ material_form.hidden_tag() }}
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="addMaterialModalLabel{{ course.id }}">Add Material to {{ course.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <div class="mb-3">
+                    {{ material_form.title.label(class="form-label") }}
+                    {{ material_form.title(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ material_form.description.label(class="form-label") }}
+                    {{ material_form.description(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ material_form.file.label(class="form-label") }}
+                    {{ material_form.file(class="form-control") }}
+                </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Add Material</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+{% endfor %}
+
+
+
+{% endblock %}

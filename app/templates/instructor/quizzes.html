@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Quizzes for {{ course.title }}</h2>
+<a href="{{ url_for('main_bp.create_quiz', course_id=course.id) }}" class="btn btn-primary mb-3">Create Quiz</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Question</th>
+            <th>Correct Answer</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for quiz in course.quizzes %}
+        <tr>
+            <td>{{ quiz.question }}</td>
+            <td>{{ quiz.answer }}</td>
+            <td>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="page-header-main">
+        <div class="page-header" id="top">
+            <div class="header-overlay">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                            <h1 class="display-3 text-white animated slideInDown font-weight-bold">Educators</h1>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                    <li class="breadcrumb-item text-white active" aria-current="page">Educators</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="team section mt-0" id="team">
+        <div class="container">
+            <div class="row justify-content-center">
+                {% for educator in educators %}
+                    <div class="col-lg-3 col-md-6">
+                        <div class="team-member">
+                            <div class="main-content"  style="height: 300px;">
+                                <img style="width:220px;height:220px;" src="{{ url_for('static', filename='uploads/' + educator.image if educator.image else 'images/member-01.jpg') }}" 
+                                 alt="{{ educator.first_name }} {{ educator.sur_name }}">
+                                <span class="category">{{ educator.specialization | capitalize }}</span>
+                                <h4>{{ educator.sur_name }} {{ educator.first_name }}</h4>
+                                <!--<p>{{ educator.email }}</p>-->
+                                <ul class="social-icons">
+                                    {% if educator.facebook %}
+                                        <li><a href="https://facebook.com/{{ educator.facebook }}" target="_blank"><i class="fab fa-facebook"></i></a></li>
+                                    {% endif %}
+                                    {% if educator.twitter %}
+                                        <li><a href="https://twitter.com/{{ educator.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                                    {% endif %}
+                                    {% if educator.linkedin %}
+                                        <li><a href="https://linkedin.com/in/{{ educator.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div> 
+    
+
+{% endblock %}

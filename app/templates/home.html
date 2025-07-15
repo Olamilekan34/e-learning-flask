@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+    <div>
+        <!-- ***** Main Banner Area Start ***** -->
+        <div class="main-banner" id="top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="owl-carousel owl-banner">
+                            <div class="item item-1">
+                                <div class="header-text">
+                                    <span class="category">Our Courses</span>
+                                    <h2>Welcome to Elearning Platform</h2>
+                                    <p>Learn, Collaborate, and Earn Badges!</p>
+                                    {% if current_user.is_authenticated %}
+                                        <a href="{{ url_for('main_bp.leaderboard') }}" class="btn btn-light btn-lg">
+                                            Check Leaderboard <i class="fas fa-trophy"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ url_for('main_bp.register') }}" class="btn btn-success btn-lg">
+                                            Get Started <i class="fas fa-rocket"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="item item-2">
+                                <div class="header-text">
+                                    <span class="category">Collaboration</span>
+                                    <h2>Work Together, Achieve More</h2>
+                                    <p>Join forces with peers and mentors to solve problems, share ideas, and grow together.</p>
+                                </div>
+                            </div>
+                            <div class="item item-3">
+                                <div class="header-text">
+                                    <span class="category">Online Learning</span>
+                                    <h2>Learn Anytime, Anywhere</h2>
+                                    <p>Access a wide range of courses and resources to enhance your skills at your own pace.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="team section mt-0" id="team">
+            <div class="container">
+                <div class="row" style="margin-bottom: 100px;">
+                    <div class="col-lg-12 text-center">
+                      <div class="section-heading">
+                        <h2>EDUCATORS</h2>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    {% for educator in educators %}
+                    <div class="col-lg-3 col-md-6">
+                        <div class="team-member">
+                            <div class="main-content">
+                                <img style="width:220px;height:220px;" src="{{ url_for('static', filename='uploads/' + educator.image if educator.image else 'images/member-01.jpg') }}" 
+                                 alt="{{ educator.first_name }} {{ educator.sur_name }}">
+                                <span class="category">{{ educator.specialization | capitalize }}</span>
+                                <h4>{{ educator.sur_name }} {{ educator.first_name }}</h4>
+                                <!--<p>{{ educator.email }}</p>-->
+                                <ul class="social-icons">
+                                    {% if educator.facebook %}
+                                        <li><a href="https://facebook.com/{{ educator.facebook }}" target="_blank"><i class="fab fa-facebook"></i></a></li>
+                                    {% endif %}
+                                    {% if educator.twitter %}
+                                        <li><a href="https://twitter.com/{{ educator.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                                    {% endif %}
+                                    {% if educator.linkedin %}
+                                        <li><a href="https://linkedin.com/in/{{ educator.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div> 
+        
+    </div>
+
+        
+{% endblock %}

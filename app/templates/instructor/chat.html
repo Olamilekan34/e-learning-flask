@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .chat-container {
+        height: 400px;
+        overflow-y: auto;
+        background-color: #f5f8fb;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .message {
+        width: fit-content;
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        margin: 10px 0;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        transition: border-left 0.3s ease;
+    }
+
+    .message.user {
+        background-color: #e2f0d9;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .message.other {
+        background-color: #dbeafe;
+        margin-right: auto;
+        text-align: left;
+    }
+
+    .message.educator {
+        background-color: #f4e1ff;
+        border-left: 5px solid #9c27b0;
+        text-align: left;
+        /* margin-right: auto */;
+    }
+
+    .message.user.educator {
+        background-color: #f4e1ff;
+        border-left: 5px solid #9c27b0;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .message.correct {
+        border-left: 5px solid #28a745;
+    }
+
+    .message.incorrect {
+        border-left: 5px solid #dc3545;
+    }
+
+    .meta {
+        font-size: 0.75rem;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .chat-input-container {
+        display: flex;
+        gap: 10px;
+        position: sticky;
+        bottom: 10px;
+        background-color: #fff;
+        padding-top: 10px;
+        z-index: 999;
+    }
+
+    .chat-input-container textarea {
+        flex-grow: 1;
+        resize: none;
+    }
+
+    .mark-btns {
+        margin-top: 5px;
+    }
+
+    .mark-btns button {
+        padding: 2px 6px;
+        font-size: 1rem;
+        margin-left: 5px;
+    }
+</style>
+
+    <div class="page-header-main">
+        <div class="page-header" id="top">
+            <div class="header-overlay">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                            <h4 class="display-3 text-white animated slideInDown font-weight-bold">Revision Discussion Room</h4>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                    <li class="breadcrumb-item text-white active" aria-current="page">{{ room.title }}</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container py-4 pb-0">
+        <h3 class="text-center mb-4">{{ room.title }}</h3>
+        <p class="text-center mb-4">{{ room.description }}</p>
+    
+        <!-- Question Area (Instructor Only) 
+        {% if current_user.role == 'educator' %}
+        <div class="mb-4">
+            <textarea id="question" class="form-control" placeholder="Post a question..."></textarea>
+            <button class="btn btn-primary mt-2" onclick="postQuestion()">Post Question</button>
+        </div>
+        {% endif %}-->
+    
+        <!-- Current Question -->
+        <div id="question_area" class="alert alert-info" style="display:none;"></div>
+    
+        <!-- Chat Box -->
+        <div id="chat_box" class="chat-container mb-4 shadow-sm rounded">
+            {% for msg in messages %}
+                {# Determine alignment and style #}
+                {% if msg.username == current_user.username and msg.role == 'educator' %}
+                    {% set alignment = 'user educator' %}
+                {% elif msg.role == 'educator' %}
+                    {% set alignment = 'educator' %}
+                {% elif msg.username == current_user.username %}
+                    {% set alignment = 'user' %}
+                {% else %}
+                    {% set alignment = 'other' %}
+                {% endif %}
+        
+                {# Render each message #}
+                <div class="message {{ alignment }} {% if msg.status %}{{ msg.status }}{% endif %}" id="{{ msg.reply_id }}">
+                    <strong>{{ msg.username }}</strong><br>
+                    {{ msg.content }}
+                    <div class="meta">{{ msg.timestamp.strftime('%d %b %Y, %I:%M %p') }}</div>
+                
+                    {% if current_user.role == 'educator' and msg.username != current_user.username %}
+                        <div class="mark-btns">
+                            <button onclick="mark('{{ msg.reply_id }}', 'correct')">✅</button>
+                            <button onclick="mark('{{ msg.reply_id }}', 'incorrect')">❌</button>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Reply Box -->
+        <div class="chat-input-container">
+            <textarea id="reply" class="form-control" placeholder="Write your reply..."></textarea>
+            <button class="btn btn-success" onclick="sendReply()">Send</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+    <script>
+        let socket = io();
+        let replyCounter = 0;
+        //let room = {{ room.id }};
+        //let room = "";
+        //let username = "";
+
+        let room = "{{ room.id }}";  // Use room ID from Flask context
+        let username = "{{ current_user.username if current_user.is_authenticated else 'Anonymous' }}";
+        let userRole = "{{ 'educator' if current_user.role == 'educator' else 'student' }}";
+
+        socket.emit('join', {room, username});
+
+        function joinRoom() {
+            room = document.getElementById("room").value;
+            username = document.getElementById("username").value;
+            socket.emit('join', {room, username});
+        }
+
+        function postQuestion() {
+            const question = document.getElementById("question").value;
+            socket.emit('post_question', {room, question, username, role: userRole});
+            document.getElementById("question").value = "";
+        }
+        
+        
+        function sendReply() {
+            const reply = document.getElementById("reply").value;
+            //const reply_id = "reply_" + (++replyCounter);
+            const uniqueSuffix = Date.now() + Math.floor(Math.random() * 1000);
+            const reply_id = "reply_" + uniqueSuffix;
+            const timestamp = new Date().toLocaleString();
+            socket.emit('send_reply', {
+                room,
+                username,
+                reply,
+                reply_id,
+                timestamp,
+                role: userRole
+            });
+            document.getElementById("reply").value = "";
+        }
+        
+        socket.on('new_reply', data => {
+            const chatBox = document.getElementById("chat_box");
+            const isUser = data.username === username;
+            let messageClass = isUser
+                ? (data.role === 'educator' ? 'user educator' : 'user')
+                : (data.role === 'educator' ? 'educator' : 'other');
+                    
+            const msgElement = document.createElement("div");
+            msgElement.className = `message ${messageClass}`;
+            msgElement.id = data.reply_id;
+        
+            let buttons = "";
+            if (userRole === 'educator') {
+                buttons = `
+                    <button onclick="mark('${data.reply_id}', 'correct')">✅</button>
+                    <button onclick="mark('${data.reply_id}', 'incorrect')">❌</button>
+                `;
+            }
+        
+            msgElement.innerHTML = `
+                <div><strong>${data.username}</strong></div>
+                <div>${data.reply}</div>
+                <div class="meta">${data.timestamp}</div>
+                ${buttons}
+            `;
+        
+            chatBox.appendChild(msgElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+        
+        socket.on('new_question', data => {
+            document.getElementById("question_area").innerHTML = `
+                <h3>Question:</h3><p>${data.question} <br><small>— ${data.username}</small></p>
+            `;
+        });
+
+        socket.on('status', data => {
+            const chatBox = document.getElementById("chat_box");
+            chatBox.innerHTML += `<div><em>${data.msg}</em></div>`;
+        });
+
+        
+
+        function mark(reply_id, status) {
+            console.log(`Marking ${reply_id} as ${status}`);
+            socket.emit('mark_reply', { room, reply_id, status });
+        }
+
+        socket.on('mark_update', data => {
+            const element = document.getElementById(data.reply_id);
+            if (element) {
+                element.classList.remove('correct', 'incorrect');
+                element.classList.add(data.status);
+        
+                const existingIcon = element.querySelector('.status-icon');
+                if (existingIcon) existingIcon.remove();
+        
+                const icon = document.createElement('span');
+                icon.textContent = data.status === 'correct' ? '✅' : '❌';
+                icon.className = 'status-icon';
+                icon.style.marginLeft = '10px';
+                icon.style.fontSize = '1.2rem';
+        
+                element.appendChild(icon);
+            }
+        });
+
+    </script>
+{% endblock %}

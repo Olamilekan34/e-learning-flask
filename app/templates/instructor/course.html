@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ course.title }}</h2>
+<p>{{ course.description }}</p>
+
+<!-- Quiz Section -->
+{% if course.quizzes %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Quizzes</h5>
+        <ul>
+            {% for quiz in course.quizzes %}
+            <li>
+                <a href="{{ url_for('main_bp.take_quiz', quiz_id=quiz.id) }}">
+                    {{ quiz.question }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<!-- Enrollment Button -->
+{% if current_user.role == 'student' and not enrolled %}
+<form action="{{ url_for('main_bp.enroll', course_id=course.id) }}" method="POST">
+    <button type="submit" class="btn btn-success">Enroll Now</button>
+</form>
+{% endif %}
+{% endblock %}

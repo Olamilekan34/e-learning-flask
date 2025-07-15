@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="page-header-main">
+        <div class="page-header" id="top">
+            <div class="header-overlay">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                            <h1 class="display-3 text-white animated slideInDown font-weight-bold">Registration</h1>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                    <li class="breadcrumb-item text-white active" aria-current="page">Register</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-us section" id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6  align-self-center">
+                    <div class="section-heading">
+                        <h6>User Registration</h6>
+                        <h2>Join Our Learning Community</h2>
+                        <p>Create an account to access a wide range of courses, collaborate with peers, and enhance your skills.</p>
+                        <div class="special-offer">
+                            <span class="offer">
+                                <i class="fa fa-sign-in-alt"></i> <!-- Registration icon -->
+                            </span>
+                            <h6>Already have an account?</h6>
+                            <h4>LOGIN HERE</h4>
+                            <a href="{{ url_for('main_bp.login') }}"><i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                <div class="contact-us-content">
+                    <form method="POST" id="contact-form" enctype="multipart/form-data" action="{{ url_for('main_bp.register') }}">
+                        {{ form.hidden_tag() }}
+                        {{ student_form.hidden_tag() }}
+                        {{ instructor_form.hidden_tag() }}
+                        <div class="row" id="role-selection">
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="text" name="username" id="username" placeholder="Enter username" value="{{ form.username.data or '' }}">
+                                </fieldset>
+                                {% if form.username.errors %}
+                                    <div class="text-danger">
+                                    {% for error in form.username.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your E-mail..." value="{{ form.email.data or '' }}" required="">
+                                </fieldset>
+                                {% if form.email.errors %}
+                                    <div class="text-danger">
+                                    {% for error in form.email.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="password" name="password" id="password" placeholder="Your Password..." required="">
+                                </fieldset>
+                                {% if form.password.errors %}
+                                    <div class="text-danger">
+                                    {% for error in form.password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="password" name="confirm_password" id="confirm_password"  placeholder="Confirm Password..." required="">
+                                </fieldset>
+                                {% if form.confirm_password.errors %}
+                                    <div class="text-danger">
+                                    {% for error in form.confirm_password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <select name="role" id="role" required="" class="pr-2">
+                                        <option value="" disabled selected>Select Role</option>
+                                        <option value="student" {% if form.role.data == 'student' %}selected{% endif %}>Student</option>
+                                        <option value="educator" {% if form.role.data == 'educator' %}selected{% endif %}>Educator</option>
+                                    </select>
+                                </fieldset>
+                                {% if form.role.errors %}
+                                    <div class="text-danger">
+                                    {% for error in form.role.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!--<div class="col-lg-12">
+                                <fieldset>
+                                    <textarea name="message" id="message" placeholder="Your Message"></textarea>
+                                </fieldset>
+                            </div>-->
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <button type="button" id="next-button" class="orange-button">Next</button>
+                                </fieldset>
+                            </div>
+
+                        </div>
+
+                        <!-- Student Panel -->
+                        <div class="row" id="student-panel" style="display: none;">
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="text" name="sur_name" id="name" value="{{ student_form.sur_name.data or '' }}" placeholder="Enter Surname" autocomplete="on">
+                                </fieldset>
+                                {% if student_form.sur_name.errors %}
+                                    <div class="text-danger">
+                                    {% for error in student_form.sur_name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="text" name="first_name" id="name" value="{{ student_form.first_name.data or '' }}"  placeholder="Enter Firstname" autocomplete="on">
+                                </fieldset>
+                                {% if student_form.first_name.errors %}
+                                    <div class="text-danger">
+                                    {% for error in student_form.first_name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <select name="gender" id="gender">
+                                        <option value="" disabled selected>Select Gender</option>
+                                        <option value="male" {% if student_form.gender.data == 'male' %}selected{% endif %}>Male</option>
+                                        <option value="female" {% if student_form.gender.data == 'female' %}selected{% endif %}>Female</option>
+                                    </select>
+                                </fieldset>
+                                {% if student_form.gender.errors %}
+                                    <div class="text-danger">
+                                    {% for error in student_form.gender.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="file" name="image" id="image" placeholder="Select Image">
+                                </fieldset>
+                                {% if student_form.image.errors %}
+                                    <div class="text-danger">
+                                    {% for error in student_form.image.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            
+
+                            <!--<div class="col-lg-12">
+                                <fieldset>
+                                    <textarea name="message" id="message" placeholder="Your Message"></textarea>
+                                </fieldset>
+                            </div>-->
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <button type="button" id="back-to-role" class="orange-button">Previous</button>
+                                    <button type="submit" id="student-submit" class="orange-button">Submit</button>
+                                </fieldset>
+                            </div>
+
+                        </div>
+
+                        <!-- Instructor Panel -->
+                        <div class="row" id="instructor-panel" style="display: none;">
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="text" name="instructor_sur_name" id="instructor_sur_name" value="{{ instructor_form.instructor_sur_name.data or '' }}"  placeholder="Enter Surname" autocomplete="on">
+                                </fieldset>
+                                {% if instructor_form.instructor_sur_name.errors %}
+                                    <div class="text-danger">
+                                    {% for error in instructor_form.instructor_sur_name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="text" name="instructor_first_name" id="instructor_first_name" value="{{ instructor_form.instructor_first_name.data or '' }}" placeholder="Enter Firstname" autocomplete="on">
+                                </fieldset>
+                                {% if instructor_form.instructor_first_name.errors %}
+                                    <div class="text-danger">
+                                    {% for error in instructor_form.instructor_first_name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-lg-6">
+                                    <fieldset>
+                                        <select name="specialization" id="specialization">
+                                            <option value="" disabled selected>Select Specialization</option>
+                                            <option value="Software Engineering" {% if instructor_form.specialization.data == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                                            <option value="Data Analysis" {% if instructor_form.specialization.data == 'Data Analysis' %}selected{% endif %}>Data Analysis</option>
+                                            <option value="CyberSecurity" {% if instructor_form.specialization.data == 'CyberSecurity' %}selected{% endif %}>CyberSecurity</option>
+                                        </select>
+                                    </fieldset>
+                                    {% if instructor_form.specialization.errors %}
+                                        <div class="text-danger">
+                                        {% for error in instructor_form.specialization.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <fieldset>
+                                        <input type="text" name="facebook" id="name" placeholder="Enter Facebook Account" value="{{ instructor_form.facebook.data or '' }}" autocomplete="on">
+                                    </fieldset>
+                                    {% if instructor_form.facebook.errors %}
+                                        <div class="text-danger">
+                                        {% for error in instructor_form.facebook.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <fieldset>
+                                        <input type="text" name="linkedin" id="linkedin" value="{{ instructor_form.linkedin.data or '' }}" placeholder="Enter LinkedIn Account" autocomplete="on">
+                                    </fieldset>
+                                    {% if instructor_form.linkedin.errors %}
+                                        <div class="text-danger">
+                                        {% for error in instructor_form.linkedin.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <fieldset>
+                                        <input type="text" name="twitter" id="twitter" value="{{ instructor_form.twitter.data or '' }}" placeholder="Enter Twitter Account" autocomplete="on">
+                                    </fieldset>
+                                    {% if instructor_form.twitter.errors %}
+                                        <div class="text-danger">
+                                        {% for error in instructor_form.twitter.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="file" name="instructor_image" id="instructor_image" placeholder="Select Image">
+                                </fieldset>
+                                {% if instructor_form.instructor_image.errors %}
+                                    <div class="text-danger">
+                                    {% for error in instructor_form.instructor_image.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            
+
+                            <!--<div class="col-lg-12">
+                                <fieldset>
+                                    <textarea name="message" id="message" placeholder="Your Message"></textarea>
+                                </fieldset>
+                            </div>-->
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <button type="button" id="back-to-role-instructor" class="orange-button">Previous</button>
+                                    <button type="submit" id="instructor-submit" class="orange-button">Submit</button>
+                                </fieldset>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const roleSelect = document.getElementById("role");
+            const nextButton = document.getElementById("next-button");
+            const studentPanel = document.getElementById("student-panel");
+            const instructorPanel = document.getElementById("instructor-panel");
+            const roleSelection = document.getElementById("role-selection");
+            const backToRole = document.getElementById("back-to-role");
+            const backToRoleInstructor = document.getElementById("back-to-role-instructor");
+        
+            // Show the appropriate panel based on the selected role
+            nextButton.addEventListener("click", function () {
+                const username = document.getElementById("username");
+                const email = document.getElementById("email");
+                const password = document.getElementById("password");
+                const confirm_password = document.getElementById("confirm_password");
+                const roleSelect = document.getElementById("role");
+                const selectedRole = roleSelect.value;
+
+                if (!username || username.value === "") {
+                    alert("Username is required.");
+                    return;
+                }
+                if (!email || email.value === "") {
+                    alert("Email is required.");
+                    return;
+                }
+                if (!password || password.value === "") {
+                    alert("Password is required.");
+                    return;
+                }
+                if (!confirm_password || confirm_password.value === "") {
+                    alert("Confirm Password is required.");
+                    return;
+                }
+
+                if (password.value !== confirm_password.value) {
+                    alert("Passwords do not match.");
+                    return;
+                }
+                
+                
+
+                if (selectedRole === "student") {
+                    roleSelection.style.display = "none";
+                    studentPanel.style.display = "block";
+                } else if (selectedRole === "educator") {
+                    roleSelection.style.display = "none";
+                    instructorPanel.style.display = "block";
+                } else {
+                    alert("Please select a role.");
+                }
+            });
+        
+            // Go back to role selection from the student panel
+            backToRole.addEventListener("click", function () {
+                studentPanel.style.display = "none";
+                roleSelection.style.display = "block";
+            });
+        
+            // Go back to role selection from the instructor panel
+            backToRoleInstructor.addEventListener("click", function () {
+                instructorPanel.style.display = "none";
+                roleSelection.style.display = "block";
+            });
+        });
+    </script>
+    
+
+{% endblock %}

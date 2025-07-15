@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="page-header-main">
+        <div class="page-header" id="top">
+            <div class="header-overlay">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 text-center d-flex align-items-center justify-content-center flex-column">
+                            <h4 class="display-3 text-white animated slideInDown font-weight-bold">Course Detail</h4>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('main_bp.home') }}">Home</a></li>
+                                    <li class="breadcrumb-item text-white active" aria-current="page">{{ course.code }}</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section about-us">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-1">
+                    <div class="accordion" id="accordionExample"  style="min-height: 400px;">
+                        {% if course.discussion_rooms %}
+                            {% for room in course.discussion_rooms %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ room.id }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse{{ room.id }}" aria-expanded="false"
+                                                aria-controls="collapse{{ room.id }}">
+                                            {{ room.title }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ room.id }}" class="accordion-collapse collapse"
+                                         aria-labelledby="heading{{ room.id }}" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            {{ room.description }}
+                
+                                            {% if is_student %}
+                                                {% if already_enrolled %}
+                                                    <div class="main-button">
+                                                        <a class="btn btn-primary" href="{{ url_for('main_bp.view_discussion_room', room_id=room.id) }}">
+                                                            Join Conversation here
+                                                        </a>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="alert alert-warning">You must enroll in the course to join this discussion.</div>
+                                                {% endif %}
+                                            {% else %}
+                                                <div class="alert alert-info">Login as a student to join discussions.</div>
+                                            {% endif %}
+                
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info">No Discussion forum added yet. Check back later.</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="col-lg-5 align-self-center">
+                    <div class="section-heading p-4">
+                        <h6>{{ course.code }}</h6>
+                        <h2>{{ course.title }}</h2>
+                        <h6>{{ course.unit }} Unit</h6>
+                        <h6>{{ course.semester }} Semester</h6>
+                        <h6>{{ course.level }} Level</h6>
+                        <h6>{{ course.session }} Academic Session</h6>
+                        <h6> This course is taken by {{ course.instructor.sur_name }} {{ course.instructor.first_name }}</h6>
+
+                        <p>{{ course.description }}</p>
+                        {% if is_student %}
+                            {% if not already_enrolled %}
+                                <div class="main-button">
+                                    <a href="{{ url_for('main_bp.enroll_in_course', course_id=course.id) }}" class="btn btn-primary">Enroll Here</a>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">You're already enrolled in this course.</div>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-info">Login as a student to enroll.</div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section mt-5">
+        <div class="container">
+            <h4 class="mb-4">Learning Materials</h4>
+
+            {% if course.learning_materials %}
+                <div class="list-group">
+                    {% for material in course.learning_materials %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ material.title }}</h6>
+                                <small>{{ material.description or "No description" }}</small>
+                            </div>
+                            <div>
+                                <a href="{{ url_for('static', filename='learning_materials/' ~ material.file_path) }}" class="btn btn-sm btn-primary" target="_blank">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No learning materials uploaded for this course yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+
+{% endblock %}

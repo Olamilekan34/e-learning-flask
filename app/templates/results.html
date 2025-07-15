@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Quiz Results</h2>
+{% if correct %}
+<div class="alert alert-success">Correct! You earned +50 points</div>
+{% else %}
+<div class="alert alert-danger">Incorrect. The right answer was "{{ quiz.answer }}"</div>
+{% endif %}
+<a href="{{ url_for('main_bp.view_course', course_id=quiz.course_id) }}" class="btn btn-secondary">Back to Course</a>
+{% endblock %}
